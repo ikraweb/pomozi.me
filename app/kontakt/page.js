@@ -1,8 +1,7 @@
-﻿
-"use client"
+﻿"use client"
 import { useState } from "react"
-import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaFacebook, FaInstagram, FaTiktok, FaCheckCircle } from "react-icons/fa"
-
+import emailjs from "@emailjs/browser"
+import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaFacebook, FaInstagram, FaTiktok, FaCheckCircle, FaTimesCircle } from "react-icons/fa"
 
 export default function KontaktPage() {
   const [formData, setFormData] = useState({
@@ -13,7 +12,7 @@ export default function KontaktPage() {
   })
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-
+  const [error, setError] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -23,31 +22,35 @@ export default function KontaktPage() {
     }))
   }
 
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-
+    setError(false)
 
     try {
-      const response = await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      })
+      // Pošalji email preko EmailJS
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+        {
+          from_name: formData.ime,
+          from_email: formData.email,
+          phone: formData.telefon || "Nije navedeno",
+          message: formData.poruka,
+        },
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+      )
 
-
-      if (response.ok) {
-        setSuccess(true)
-        setFormData({ ime: "", email: "", telefon: "", poruka: "" })
-        setTimeout(() => setSuccess(false), 5000)
-      }
-    } catch (error) {
-      console.error("Greška:", error)
+      setSuccess(true)
+      setFormData({ ime: "", email: "", telefon: "", poruka: "" })
+      setTimeout(() => setSuccess(false), 5000)
+    } catch (err) {
+      console.error("Email error:", err)
+      setError(true)
+      setTimeout(() => setError(false), 5000)
     }
     setLoading(false)
   }
-
 
   return (
     <div className="w-screen overflow-x-hidden">
@@ -67,14 +70,12 @@ export default function KontaktPage() {
           }}
         ></div>
 
-
         {/* Animated particles */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
           <FaPhone className="particle absolute top-20 left-10 text-8xl" />
           <FaEnvelope className="particle absolute bottom-20 right-20 text-9xl" style={{animationDelay: '2s'}} />
           <FaPhone className="particle absolute top-1/2 left-1/3 text-8xl" style={{animationDelay: '4s'}} />
         </div>
-
 
         <div className="container mx-auto w-full text-center relative z-10 px-4">
           <div className="animate-fade-in-up">
@@ -87,7 +88,6 @@ export default function KontaktPage() {
           </div>
         </div>
 
-
         {/* Wave separator */}
         <div className="absolute bottom-0 left-0 right-0">
           <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
@@ -96,14 +96,12 @@ export default function KontaktPage() {
         </div>
       </section>
 
-
       <div className="w-full">
         <div className="container mx-auto px-4 py-20 max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Kontakt informacije */}
             <div className="space-y-8">
               <h2 className="text-3xl font-bold text-gray-800 mb-8">Naše informacije</h2>
-
 
               {/* Email */}
               <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-2xl border-l-4 border-blue-500 hover-lift">
@@ -124,7 +122,6 @@ export default function KontaktPage() {
                 </div>
               </div>
 
-
               {/* Telefon */}
               <div className="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-2xl border-l-4 border-green-500 hover-lift">
                 <div className="flex items-start gap-4">
@@ -144,7 +141,6 @@ export default function KontaktPage() {
                 </div>
               </div>
 
-
               {/* Adresa */}
               <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-2xl border-l-4 border-orange-500 hover-lift">
                 <div className="flex items-start gap-4">
@@ -153,13 +149,12 @@ export default function KontaktPage() {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2">Lokacija</h3>
-                    <p className="text-gray-700 font-semibold">Potkrajacka 140</p>
+                    <p className="text-gray-700 font-semibold">Potkrajačka 140</p>
                     <p className="text-gray-700 font-semibold">Potkrajci, Bijelo Polje</p>
                     <p className="text-gray-600 text-sm mt-2">Crna Gora</p>
                   </div>
                 </div>
               </div>
-
 
               {/* Društvene mreže */}
               <div className="bg-gray-50 p-8 rounded-2xl border-l-4 border-primary">
@@ -193,19 +188,23 @@ export default function KontaktPage() {
               </div>
             </div>
 
-
             {/* Kontakt forma */}
             <div className="bg-white rounded-3xl shadow-2xl p-8 hover-lift">
               <h2 className="text-3xl font-bold text-gray-800 mb-8">Pošalji poruku</h2>
 
-
               {success && (
-                <div className="bg-green-50 border-2 border-green-500 text-green-700 p-4 rounded-lg mb-6 flex items-center gap-3">
+                <div className="bg-green-50 border-2 border-green-500 text-green-700 p-4 rounded-lg mb-6 flex items-center gap-3 animate-fade-in">
                   <FaCheckCircle className="text-2xl" />
                   <span className="font-semibold">Poruka je uspješno poslana! Hvala vam.</span>
                 </div>
               )}
 
+              {error && (
+                <div className="bg-red-50 border-2 border-red-500 text-red-700 p-4 rounded-lg mb-6 flex items-center gap-3 animate-fade-in">
+                  <FaTimesCircle className="text-2xl" />
+                  <span className="font-semibold">Greška pri slanju. Pokušajte ponovo.</span>
+                </div>
+              )}
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Ime */}
@@ -222,7 +221,6 @@ export default function KontaktPage() {
                   />
                 </div>
 
-
                 {/* Email */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
@@ -237,7 +235,6 @@ export default function KontaktPage() {
                   />
                 </div>
 
-
                 {/* Telefon */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Telefon (opciono)</label>
@@ -250,7 +247,6 @@ export default function KontaktPage() {
                     className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-primary focus:outline-none transition-colors"
                   />
                 </div>
-
 
                 {/* Poruka */}
                 <div>
@@ -265,7 +261,6 @@ export default function KontaktPage() {
                     required
                   ></textarea>
                 </div>
-
 
                 {/* Submit dugme */}
                 <button
