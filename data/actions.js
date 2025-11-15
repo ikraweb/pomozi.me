@@ -1,6 +1,6 @@
 export const activeActions = [
   {
-    "title": "zuzuki",
+    "title": "zu",
     "shortDescription": "zuizui",
     "fullDescription": "zuizui",
     "goal": "76678768",
@@ -20,6 +20,20 @@ export const activeActions = [
     "urgent": false,
     "completed": false,
     "id": 104
+  },
+  {
+    "title": "hg",
+    "shortDescription": "hjg",
+    "fullDescription": "ghj",
+    "goal": "546",
+    "collected": "546",
+    "mainImage": "/images/1763217857781-Nenaslovljeni-dizajn-(3).png",
+    "gallery": [
+      "/images/1763217857781-Nenaslovljeni-dizajn-(3).png"
+    ],
+    "urgent": false,
+    "completed": false,
+    "id": 105
   }
 ]
 
