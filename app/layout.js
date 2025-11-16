@@ -1,33 +1,51 @@
-﻿import "./globals.css"
+﻿import { Inter } from "next/font/google"
+import "./globals.css"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 
+const inter = Inter({ subsets: ["latin"] })
+
 export const metadata = {
-  title: "Pomozi.me - Humanitarna Organizacija | Crna Gora",
+  metadataBase: new URL('https://pomozi.me'),
+  title: "Pomozi.me - Humanitarna Organizacija",
   description: "Neprofitna humanitarna organizacija posvećena pomaganju ljudi u potrebi širom Crne Gore. Svaka donacija donosi nadu i svjetlost u nečiji život.",
   keywords: "humanitarna organizacija, Crna Gora, donacije, pomoć, NVO Pomozi",
+  authors: [{ name: "Pomozi.me" }],
   icons: {
-    icon: '/logo.png',
-    shortcut: '/logo.png',
-    apple: '/logo.png',
+    icon: '/images/logo.png',
+    shortcut: '/images/logo.png',
+    apple: '/images/logo.png',
   },
   openGraph: {
-    title: "Pomozi.me - Humanitarna Organizacija",
-    description: "Pomaganje ljudi u potrebi širom Crne Gore",
-    url: "https://pomozi.me",
-    siteName: "Pomozi.me",
-    images: [{ url: "/og-image.jpg" }],
+    type: 'website',
+    locale: 'sr_ME',
+    url: 'https://pomozi.me',
+    siteName: 'Pomozi.me',
+    title: 'Pomozi.me - Humanitarna Organizacija',
+    description: 'Pomaganje ljudi u potrebi širom Crne Gore. Svaka donacija donosi nadu i svjetlost u nečiji život.',
+    images: [
+      {
+        url: '/images/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Pomozi.me - Humanitarna Organizacija',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Pomozi.me - Humanitarna Organizacija',
+    description: 'Pomaganje ljudi u potrebi širom Crne Gore. Svaka donacija donosi nadu.',
+    images: ['/images/logo.png'],
   },
 }
 
 export default function RootLayout({ children }) {
   return (
     <html lang="sr">
-      <body className="bg-white">
+      <body className={inter.className}>
         <Navbar />
-        <main>
-          {children}
-        </main>
+        {children}
         <Footer />
       </body>
     </html>
