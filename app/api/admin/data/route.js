@@ -1,22 +1,15 @@
-﻿import { promises as fs } from 'fs'
-import path from 'path'
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
+import { Redis } from '@upstash/redis'
 
-const DATA_FILE = path.join(process.cwd(), 'data', 'actions-db.json')
+const redis = Redis.fromEnv()
 
-async function readData() {
+export async function GET() {
   try {
-    const data = await fs.readFile(DATA_FILE, 'utf-8')
-    return JSON.parse(data)
-  } catch {
-    return { actions: [], partners: [] }
+    const actions = await redis.get('actions') || []
+    const partners = await redis.get('partners') || []
+    
+    return NextResponse.json({ actions, partners })
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
-}
-
-export async function GET(request) {
-  const data = await readData()
-  return NextResponse.json({
-    actions: data.actions || [],
-    partners: data.partners || []
-  })
 }

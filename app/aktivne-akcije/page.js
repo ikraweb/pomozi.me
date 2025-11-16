@@ -1,6 +1,5 @@
 ﻿import ActionCard from '@/components/ActionCard'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { Redis } from '@upstash/redis'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -10,12 +9,12 @@ export const metadata = {
   description: 'Pogledajte sve trenutno aktivne humanitarne akcije',
 }
 
+const redis = Redis.fromEnv()
+
 async function getActiveActions() {
   try {
-    const filePath = path.join(process.cwd(), 'data', 'actions-db.json')
-    const data = await fs.readFile(filePath, 'utf-8')
-    const json = JSON.parse(data)
-    return json.actions.filter(a => !a.completed) || []
+    const actions = await redis.get('actions') || []
+    return actions.filter(a => !a.completed)
   } catch (error) {
     console.error('Error loading actions:', error)
     return []

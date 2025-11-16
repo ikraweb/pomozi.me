@@ -1,6 +1,5 @@
 ﻿import ActionCard from '@/components/ActionCard'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { Redis } from '@upstash/redis'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -10,12 +9,12 @@ export const metadata = {
   description: 'Pogledajte sve uspješno realizovane humanitarne akcije',
 }
 
+const redis = Redis.fromEnv()
+
 async function getCompletedActions() {
   try {
-    const filePath = path.join(process.cwd(), 'data', 'actions-db.json')
-    const data = await fs.readFile(filePath, 'utf-8')
-    const json = JSON.parse(data)
-    return json.actions.filter(a => a.completed) || []
+    const actions = await redis.get('actions') || []
+    return actions.filter(a => a.completed)
   } catch (error) {
     console.error('Error loading completed actions:', error)
     return []
@@ -37,7 +36,7 @@ export default async function CompletedActionsPage() {
         
         {completedActions.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 text-xl">Trenutno nema uspješnih akcija.</p>
+            <p className="text-gray-600 text-xl">Trenutno nema završenih akcija.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

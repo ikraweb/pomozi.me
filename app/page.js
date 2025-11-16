@@ -3,11 +3,12 @@ import ActionCard from "@/components/ActionCard"
 import CompletedActionCard from "@/components/CompletedActionCard"
 import PartnerSlider from "@/components/PartnerSlider"
 import { FaHeart, FaHandsHelping, FaUsers, FaChartLine } from "react-icons/fa"
-import { promises as fs } from 'fs'
-import path from 'path'
+import { Redis } from '@upstash/redis'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
+
+const redis = Redis.fromEnv()
 
 export const metadata = {
   title: "Pomozi.me - Humanitarna Organizacija | Crna Gora",
@@ -27,17 +28,15 @@ export const metadata = {
   },
 }
 
-// Fetch actions and partners from JSON database
 async function getData() {
   try {
-    const filePath = path.join(process.cwd(), 'data', 'actions-db.json')
-    const data = await fs.readFile(filePath, 'utf-8')
-    const json = JSON.parse(data)
+    const actions = await redis.get('actions') || []
+    const partners = await redis.get('partners') || []
     
     return {
-      activeActions: json.actions.filter(a => !a.completed) || [],
-      completedActions: json.actions.filter(a => a.completed) || [],
-      partners: json.partners || []
+      activeActions: actions.filter(a => !a.completed) || [],
+      completedActions: actions.filter(a => a.completed) || [],
+      partners: partners || []
     }
   } catch (error) {
     console.error('Error loading data:', error)

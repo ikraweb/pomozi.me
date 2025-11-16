@@ -4,15 +4,18 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'via.placeholder.com',
+        port: '',
         pathname: '/**',
       },
     ],
   },
-  // Experimental features za performance
-  experimental: {
-    optimizePackageImports: ['react-icons'],
-  },
 }
 
-module.exports = nextConfig
+export default nextConfig

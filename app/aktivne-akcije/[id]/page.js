@@ -2,16 +2,14 @@ import Link from 'next/link'
 import ImageSlider from '@/components/ImageSlider'
 import ProgressBar from '@/components/ProgressBar'
 import { notFound } from 'next/navigation'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { Redis } from '@upstash/redis'
 
-// Fetch action by ID
+const redis = Redis.fromEnv()
+
 async function getAction(id) {
   try {
-    const filePath = path.join(process.cwd(), 'data', 'actions-db.json')
-    const data = await fs.readFile(filePath, 'utf-8')
-    const json = JSON.parse(data)
-    return json.actions.find(a => a.id === id && !a.completed)
+    const actions = await redis.get('actions') || []
+    return actions.find(a => a.id === id && !a.completed)
   } catch (error) {
     console.error('Error loading action:', error)
     return null
@@ -38,9 +36,9 @@ export default async function ActionDetailPage({ params }) {
               <p className="text-gray-700 text-lg mb-6 leading-relaxed">{action.fullDescription}</p>
               <div className="bg-gray-50 p-6 rounded-lg mb-6">
                 <h3 className="text-xl font-semibold mb-4">Status prikupljanja</h3>
-                <ProgressBar collected={action.collected} goal={action.goal} isCompleted={false} />
+                <ProgressBar collected={parseInt(action.collected)} goal={parseInt(action.goal)} isCompleted={false} />
                 <p className="mt-4 text-gray-600">
-                  Preostalo još: <span className="font-semibold text-primary">{action.goal - action.collected}€</span>
+                  Preostalo još: <span className="font-semibold text-primary">{parseInt(action.goal) - parseInt(action.collected)}€</span>
                 </p>
               </div>
               <Link 
