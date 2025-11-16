@@ -25,10 +25,11 @@ export const metadata = {
     description: 'Pomaganje ljudi u potrebi širom Crne Gore. Svaka donacija donosi nadu i svjetlost u nečiji život.',
     images: [
       {
-        url: '/images/logo.png',
-        width: 1200,
-        height: 630,
+        url: 'https://pomozi.me/images/logo.png',
+        width: 512,
+        height: 512,
         alt: 'Pomozi.me - Humanitarna Organizacija',
+        type: 'image/png',
       },
     ],
   },
@@ -36,7 +37,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Pomozi.me - Humanitarna Organizacija',
     description: 'Pomaganje ljudi u potrebi širom Crne Gore. Svaka donacija donosi nadu.',
-    images: ['/images/logo.png'],
+    images: ['https://pomozi.me/images/logo.png'],
   },
 }
 
